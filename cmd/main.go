@@ -1,47 +1,33 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"log"
 
-	"golang.org/x/crypto/ssh"
+	"github.com/asialeaf/automation/pkg/core/connector"
 )
 
 func main() {
-	// var hostKey ssh.PublicKey
-	// An SSH client is represented with a ClientConn.
-	//
-	// To authenticate with the remote server you must pass at least one
-	// implementation of AuthMethod via the Auth field in ClientConfig,
-	// and provide a HostKeyCallback.
-	config := &ssh.ClientConfig{
-		User: "root",
-		Auth: []ssh.AuthMethod{
-			ssh.Password("abc@123"),
+	var hosts []connector.Host
+	Hosts := []connector.BaseHost{
+		{
+			Name:     "node1",
+			Address:  "10.1.2.104",
+			User:     "root",
+			Password: "abc@123",
+			Port:     22,
+			Timeout:  10,
 		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
-	client, err := ssh.Dial("tcp", "10.1.2.104:22", config)
-	if err != nil {
-		log.Fatal("Failed to dial: ", err)
-	}
-	defer client.Close()
+	for _, v := range Hosts {
+		hosts = append(hosts, &v)
+		for _, host := range hosts {
+			dialer := connector.NewDialer()
+			conn, _ := dialer.Connect(host)
+			stdout, _, _ := conn.Exec("uname -sr", host)
+			fmt.Println(stdout)
 
-	// Each ClientConn can support multiple interactive sessions,
-	// represented by a Session.
-	session, err := client.NewSession()
-	if err != nil {
-		log.Fatal("Failed to create session: ", err)
-	}
-	defer session.Close()
+			// dialer.Close(host)
 
-	// Once a Session is created, you can execute a single command on
-	// the remote side using the Run method.
-	var b bytes.Buffer
-	session.Stdout = &b
-	if err := session.Run("/usr/bin/whoami"); err != nil {
-		log.Fatal("Failed to run: " + err.Error())
+		}
 	}
-	fmt.Println(b.String())
 }
