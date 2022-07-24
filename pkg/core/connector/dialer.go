@@ -3,8 +3,6 @@ package connector
 import (
 	"sync"
 	"time"
-
-	"github.com/asialeaf/automation/pkg/core/logger"
 )
 
 type Dialer struct {
@@ -52,7 +50,7 @@ func (d *Dialer) Close(host Host) {
 	}
 
 	conn.Close()
-	logger.Log.Debugf("close connection %s", host.GetName())
+	// logger.Log.Debugf("close connection %s", host.GetName())
 
 	c := conn.(*connection)
 	d.forgetConnection(c)

@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"github.com/asialeaf/automation/pkg/core/logger"
-	"github.com/asialeaf/automation/pkg/core/utils"
+	"github.com/asialeaf/automation/pkg/core/util"
 	"github.com/pkg/errors"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
@@ -272,7 +272,7 @@ func (c *connection) Fetch(local, remote string, host Host) error {
 		return fmt.Errorf("open remote file failed %v, remote path: %s", err, remote)
 	}
 
-	err = utils.MkFileFullPathDir(local)
+	err = util.MkFileFullPathDir(local)
 	if err != nil {
 		return err
 	}
@@ -311,7 +311,7 @@ func (c *connection) Scp(src, dst string, host Host) error {
 	}
 	num := 1
 	if f.IsDir() {
-		num = utils.CountDirFiles(src)
+		num = util.CountDirFiles(src)
 	}
 	// empty dir
 	if num == 0 {
@@ -370,11 +370,11 @@ func (c *connection) copyFileToRemote(src, dst string, host Host) error {
 	var (
 		srcMd5, dstMd5 string
 	)
-	srcMd5 = utils.LocalMd5Sum(src)
+	srcMd5 = util.LocalMd5Sum(src)
 	if c.RemoteFileExist(dst, host) {
 		dstMd5 = c.RemoteMd5Sum(dst, host)
 		if srcMd5 == dstMd5 {
-			logger.Log.Debug("remote file %s md5 value is the same as local file, skip scp", dst)
+			// logger.Log.Debug("remote file %s md5 value is the same as local file, skip scp", dst)
 			return nil
 		}
 	}

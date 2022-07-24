@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/asialeaf/automation/pkg/core/connector"
 )
 
 func main() {
+
 	var hosts []connector.Host
 	Hosts := []connector.BaseHost{
 		{
@@ -21,12 +22,18 @@ func main() {
 	for _, v := range Hosts {
 		hosts = append(hosts, &v)
 		for _, host := range hosts {
-			dialer := connector.NewDialer()
-			conn, _ := dialer.Connect(host)
-			stdout, _, _ := conn.Exec("uname -sr", host)
-			fmt.Println(stdout)
 
-			// dialer.Close(host)
+			dialer := connector.NewDialer()
+			conn, err := dialer.Connect(host)
+			if err != nil {
+				log.Fatal(err)
+			}
+			stdout, _, err := conn.Exec("uname -sr", host)
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Println(stdout)
+			dialer.Close(host)
 
 		}
 	}
