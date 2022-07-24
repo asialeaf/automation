@@ -25,7 +25,7 @@ func NewLogger(outputPath string, verbose bool) *AutoLog {
 
 	formatter := &Formatter{
 		HideKeys:               true,
-		TimestampFormat:        "15:04:05 MST",
+		TimestampFormat:        "2006-01-02 15:04:05 MST",
 		NoColors:               true,
 		ShowLevel:              logrus.WarnLevel,
 		FieldsDisplayWithOrder: []string{common.Pipeline, common.Module, common.Task, common.Node},

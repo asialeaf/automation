@@ -37,14 +37,14 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	timestampFormat := f.TimestampFormat
 	if timestampFormat == "" {
-		timestampFormat = time.StampMilli
+		timestampFormat = time.RFC3339
 	}
 
 	// output buffer
 	b := &bytes.Buffer{}
 
 	// write time
-	b.WriteString(entry.Time.Format(timestampFormat))
+	b.WriteString(fmt.Sprintf("[%s] [%s]", entry.Time.Format(timestampFormat), entry.Level))
 
 	if f.CallerFirst {
 		f.writeCaller(b, entry)

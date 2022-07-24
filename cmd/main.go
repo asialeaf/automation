@@ -1,13 +1,12 @@
 package main
 
 import (
-	"log"
-
 	"github.com/asialeaf/automation/pkg/core/connector"
+	"github.com/asialeaf/automation/pkg/core/logger"
 )
 
 func main() {
-
+	logger.Log = logger.NewLogger("", true)
 	var hosts []connector.Host
 	Hosts := []connector.BaseHost{
 		{
@@ -26,13 +25,14 @@ func main() {
 			dialer := connector.NewDialer()
 			conn, err := dialer.Connect(host)
 			if err != nil {
-				log.Fatal(err)
+				logger.Log.Errorf("connector failed: %s", host.GetName())
 			}
 			stdout, _, err := conn.Exec("uname -sr", host)
 			if err != nil {
-				log.Fatal(err)
+				logger.Log.Errorf("exec failed: %s", err)
 			}
-			log.Println(stdout)
+			logger.Log.Infof("Output: %s", stdout)
+			conn.Chmod("/root/anaconda-ks.cfg", 777)
 			dialer.Close(host)
 
 		}
